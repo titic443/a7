@@ -54,3 +54,33 @@ exports.addAppointment = async (req, res, next) => {
         res.status(500).json({ success: false, message: "Cannot create Appointment" });
     }
 }
+
+exports.updateAppointment = async (req, res, next) => {
+    try {
+        let appointment = await Appointment.findById(req.params.id);
+        if (!appointment) {
+            return res.status(400).json({ success: false, message: `No appointment with the id of ${req.params.id}` });
+        }
+        appointment = await Appointment.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+            runValidators: true
+        });
+        res.status(200).json({ success: true, data: appointment });
+    } catch (err) {
+        res.status(400).json({ success: false, message: "Cannot update Appointment" });
+    }
+}
+
+
+exports.deleteAppointment = async (req, res, next) => {
+    try {
+        const appointment = await Appointment.findById(req.params.id);
+        if (!appointment) {
+            return res.status(400).json({ success: false, message: `No appointment with the id of ${req.params.id}` });
+        }
+        await appointment.deleteOne();
+        res.status(200).json({ success: true, data: {} });
+    } catch (err) {
+        res.status(400).json({ success: false, message: "Cannot delete Appointment" });
+    }
+}
