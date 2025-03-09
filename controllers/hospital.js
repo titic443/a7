@@ -1,3 +1,4 @@
+const Appointment = require('../models/Appointment');
 const Hospital = require('../models/Hospital');
 
 exports.getHospitals = async (req, res, next) => {
@@ -112,12 +113,13 @@ exports.updateHospital = async (req, res, next) => {
 
 exports.deleteHospital = async (req, res, next) => {
     try {
-        const hospital = await Hospital.findByIdAndDelete(req.params.id);
+        const hospital = await Hospital.findById(req.params.id);
 
         if (!hospital) {
-            return res.status(400).json({ success: false });
+            return res.status(400).json({ success: false, message: `Hospital not found with id of ${req.params.id}` });
         }
-
+        await Appointment.deleteMany({ hospital: req.params.id })
+        await Hospital.deleteOne({ _id: req.params.id });
         res.status(200).json({ success: true, data: {} });
     } catch (err) {
         res.status(400).json({ success: false });
