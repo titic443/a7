@@ -1,16 +1,18 @@
 const express = require('express');
 const { getHospitals, createHospital, getHospital, updateHospital, deleteHospital } = require('../controllers/hospital');
 const router = express.Router();
-const {protect, authorize} = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
+const appointmentRouter = require('./appointments');
 
+router.use('/:hospitalId/appointments', appointmentRouter)
 router.route('/')
-.get(getHospitals)
-.post(protect, authorize('admin'),createHospital)
+    .get(getHospitals)
+    .post(protect, authorize('admin'), createHospital)
 
 router.route('/:id')
-.get(getHospital)
-.put(protect, authorize('admin'), updateHospital)
-.delete(protect, authorize('admin'), deleteHospital)
+    .get(getHospital)
+    .put(protect, authorize('admin'), updateHospital)
+    .delete(protect, authorize('admin'), deleteHospital)
 // router.get('/', (req, res) => {
 //     res.status(200).json({success: true, data:'Show all hospotals'})
 // })
