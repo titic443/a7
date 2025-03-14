@@ -72,7 +72,7 @@ exports.updateAppointment = async (req, res, next) => {
             return res.status(400).json({ success: false, message: `No appointment with the id of ${req.params.id}` });
         }
         if (appointment.user.toString() !== req.user.id && req.user.role !== 'admin') {
-            return res.status(403).json({ success: false, message: `User ${req.user.id} is not authorized to update this appointment` });
+            return res.status(401).json({ success: false, message: `User ${req.user.id} is not authorized to update this appointment` });
         }
 
         appointment = await Appointment.findByIdAndUpdate(req.params.id, req.body, {
@@ -91,6 +91,9 @@ exports.deleteAppointment = async (req, res, next) => {
         const appointment = await Appointment.findById(req.params.id);
         if (!appointment) {
             return res.status(400).json({ success: false, message: `No appointment with the id of ${req.params.id}` });
+        }
+        if(appointment.user.toString() !== req.user.id && req.user.role !== 'admin') {
+            return res.status(401).json({ success: false, message: `User ${req.user.id} is not authorized to delete this bootcamp` });
         }
         await appointment.deleteOne();
         res.status(200).json({ success: true, data: {} });
